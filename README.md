@@ -59,7 +59,7 @@ The tile movement animation while sliding
 #### 3.3.4. Interface Music
 This is the UI sound effects. Player can choose on/off the effects.
 
-### 3.4. Various Mode page
+### 3.4. Mode Pages UI
 Lets see what each UI does in mode.
 
 1. **Start**: It will shuffle the tiles to arandom position.
