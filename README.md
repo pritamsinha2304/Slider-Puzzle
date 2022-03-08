@@ -9,6 +9,6 @@ This game is based on sliding tile to rearrange to the original position. After 
 ## About the app
 
 ### Loading Page
-![Loading Page]('/app_images/Initial Loading Page.png')
+![Loading Page](app_images/Initial Loading Page.png)
 
 
