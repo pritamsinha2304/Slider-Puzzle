@@ -12,5 +12,8 @@ Lets familiarize with the various pages-
 
 <img src="app_images/Initial Loading Page.png" width="350" title="Initial Loading Page"> <img src="app_images/Cool Theme Front Page.png" width="350" title="Cool Theme Front Page">
 
-
+<figure>
+    <img src='app_images/Initial Loading Page.png' alt='missing' />
+    <figcaption>Caption goes here</figcaption>
+</figure>
 
