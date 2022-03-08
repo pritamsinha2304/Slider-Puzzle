@@ -10,8 +10,7 @@ This game is based on sliding tile to rearrange to the original position. After 
 
 Lets familiarize with the various pages-
 
-### Loading Page
-<img src="app_images/Initial Loading Page.png" width="350" title="hover text">
-![Loading Page](app_images/Initial Loading Page.png)
+<img src="app_images/Initial Loading Page.png" width="350" title="Initial Loading Page"> <img src="app_images/Cool Theme Front Page.png" width="350" title="Cool Theme Front Page">
+
 
 
