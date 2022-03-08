@@ -10,6 +10,6 @@ This game is based on sliding tile to rearrange to the original position. After 
 
 Lets familiarize with the various pages-
 
-<img src="app_images/Initial Loading Page.png" width="330" title="Initial Loading Page"> <img src="app_images/Cool Theme Front Page.png" width="330" title="Cool Theme Front Page"><img src="app_images/Cool Theme Main Menu Page.png" width="330" title="Cool Theme Main Menu Page">
+<img src="app_images/Initial Loading Page.png" width="330" title="Initial Loading Page"> <img src="app_images/Cool Theme Front Page.png" width="330" title="Cool Theme Front Page"> <img src="app_images/Cool Theme Main Menu Page.png" width="330" title="Cool Theme Main Menu Page">
 
 
