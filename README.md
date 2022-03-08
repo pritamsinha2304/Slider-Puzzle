@@ -11,6 +11,7 @@ This game is based on sliding tile to rearrange to the original position. After 
 Lets familiarize with the various pages-
 
 ### Loading Page
+<img src="app_images/Initial Loading Page.png" width="350" title="hover text">
 ![Loading Page](app_images/Initial Loading Page.png)
 
 
