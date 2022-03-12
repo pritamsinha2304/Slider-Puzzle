@@ -70,6 +70,6 @@ Player can change
 ----- Have Fun
 
 
-Check out my <a href="https://www.youtube.com/watch?v=1yrp59VzyJw">Youtube Video</a> if u like.
+Check out my <a href="https://www.youtube.com/watch?v=1yrp59VzyJw">Youtube Video</a> if you like.
   
 
