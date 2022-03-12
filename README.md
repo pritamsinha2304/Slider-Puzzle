@@ -68,6 +68,8 @@ Player can change
   
 
 ----- Have Fun
-<a href="https://www.youtube.com/watch?v=1yrp59VzyJw">Youtube Video</a>
+
+
+Check out my <a href="https://www.youtube.com/watch?v=1yrp59VzyJw">Youtube Video</a> if u like.
   
 
