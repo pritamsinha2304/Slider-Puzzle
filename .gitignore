@@ -9,7 +9,7 @@
 .history
 .svn/
 .env
-/config/
+/config/config_page.dart
 .runtimeconfig.json
 
 # IntelliJ related
