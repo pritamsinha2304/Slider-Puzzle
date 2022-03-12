@@ -14,4 +14,4 @@ The game works like this- "On starting the game all the tiles will get shuffled 
 
 Loading the game will get you a loading screen followed by welcome screen. 
 
-<img src="app_images/Warm Mobile Start.png" alt="Warm Mobile Start">
+<img src="app_images/Warm Mobile Start.png" alt="Warm Mobile Start" width="300" />
