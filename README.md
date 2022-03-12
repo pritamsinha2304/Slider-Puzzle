@@ -33,10 +33,15 @@ All the options are mentioned briefly about what the modes is about.
    **Basic** - Move all the tiles freely, 
    **Refer Timer** - Memorize the image shown before the time runs out and solve the puzzle and  
    **Timer** - Solve the whole puzzle within the specified time.
+   
+   <img src="app_images/Warm Mobile Basic.png" alt="Warm Mobile Basic" width="300" /> <img src="app_images/Warm Mobile Tiner.png" alt="Warm Mobile Timer" width="300" /> <img src="app_images/Warm Mobile 5x5.png" alt="Warm Mobile 5x5" width="300" />
   
   ### c. Tile Background Option:
   
   Currently there are 3 background option available- **Same Theme Color**, **Image** and **Random Image from Unsplash**. Each one is self explanatory.
+  
+  <img src="app_images/Warm Mobile Gallery.png" alt="Warm Mobile Gallery" width="300" /> <img src="app_images/Warm Mobile Unsplash.png" alt="Warm Mobile Unsplash" width="300" />
+  
   
 
 ## 5. Settings
@@ -48,6 +53,15 @@ Player can change
   
   Currently there are 3 themes available - Warm, Cool, Cyberpunk
   
-  <img src="app_images/Warm Mobile Settings.png" alt="Warm Mobile Settings" width="300" /> <img src="app_images/Cool Mobile Start.png" alt="Cool Mobile Start" width="300" />   <img src="app_images/Cyberpunk Mobile Start.png" alt="Pyberpunk Mobile Start" width="300" />
+  <img src="app_images/Warm Mobile Settings.png" alt="Warm Mobile Settings" width="300" /> <img src="app_images/Cool Mobile Settings.png" alt="Cool Mobile Settings" width="300" />   <img src="app_images/Cyberpunk Mobile Settings.png" alt="Pyberpunk Mobile Settings" width="300" /> 
+  
+  ### b. **Music**:
+  
+  Currently 2 music is there for background. There is also interface music.
+  
+  ### c. **Tile Movement Curve**:
+  
+  Player can choose various animation for tile movements.
+  
   
 
