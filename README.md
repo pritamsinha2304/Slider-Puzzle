@@ -26,6 +26,8 @@ All the options are mentioned briefly about what the modes is about.
   
   Currently, there are 5 tile numbers i.e **2x2**, **3x3**, **4x4**, **5x5**. Each one is self explanatory.
   
+  <img src="app_images/Warm Basic 5x5.png" alt="Warm Basic 5x5" width="300" />
+  
   ### b. Modes:
   
   Currently, there are 3 modes available- 
@@ -63,5 +65,9 @@ Player can change
   
   Player can choose various animation for tile movements.
   
+  
+
+----- Have Fun
+<a href="https://www.youtube.com/watch?v=1yrp59VzyJw">Youtube Video</a>
   
 
