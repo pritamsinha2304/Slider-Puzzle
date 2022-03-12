@@ -12,6 +12,7 @@
 /config/config_page.dart
 config/config_page.dart
 config_page.dart
+/lib/config/*
 .runtimeconfig.json
 
 # IntelliJ related
