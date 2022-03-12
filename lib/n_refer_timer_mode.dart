@@ -1,13 +1,6 @@
-import 'dart:async';
-import 'package:page_transition/page_transition.dart';
-import 'package:slide_puzzle/n_menu_page.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'config/config_page.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:image/image.dart' as imglib;
-import 'dart:typed_data';
+import 'lib.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as imglib;
 
 class NReferTimerPage extends StatefulWidget {
   final int tileNo;
@@ -39,7 +32,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
   List coord() {
     double step = 2.0 / (tileNo.toDouble() - 1.0);
     List a = [for (int i = 0; i < tileNo; i++) -1.0 + (step * i.toDouble())];
-    print(a);
+    // print(a);
     return a;
   }
 
@@ -93,9 +86,9 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
     originalPosition.addAll(dummyOriginalPosition);
     position.addAll(dummyOriginalPosition);
     possiblePaths.addAll(dummyPossiblePaths);
-    print(dummyOriginalPosition);
-    print(dummyPossiblePaths);
-    print(count);
+    // print(dummyOriginalPosition);
+    // print(dummyPossiblePaths);
+    // print(count);
   }
 
   // Shuffled position is required for reset
@@ -120,7 +113,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
     });
   }
 
-  // List<Image> splittedImage = [];
   Future<List<Image>> splitImage(path) async {
     ByteData bytes = await rootBundle.load(path);
     // convert image to image from image package
@@ -146,7 +138,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
     for (var img in parts) {
       output.add(Image.memory(Uint8List.fromList(imglib.encodeJpg(img))));
     }
-    print(output);
+    // print(output);
     return output;
   }
 
@@ -177,7 +169,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
     for (var img in parts) {
       output.add(Image.memory(Uint8List.fromList(imglib.encodeJpg(img))));
     }
-    print(output);
+    // print(output);
     return output;
   }
 
@@ -193,19 +185,19 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
     if (tileBackgroundOption == 'IMAGE') {
       _splittedImage =
           Future.delayed(const Duration(seconds: 0)).then((_) async {
-        print('initstate splitted image run first');
+        // print('initstate splitted image run first');
         return await splitImage('assets/images/$localImageName');
       });
     }
     if (tileBackgroundOption == 'RANDOM IMAGE') {
       _splittedImage =
           Future.delayed(const Duration(seconds: 0)).then((_) async {
-        print('initstate splitted image run first');
+        // print('initstate splitted image run first');
         return await networkSplitImage(Uri.parse(networkImageUrl));
       });
     }
 
-    tileSize = (mainContainerSize / tileNo).floor().toDouble() - 10.0;
+    tileSize = ((mainContainerSize - 20.0) / tileNo).toDouble();
   }
 
   void _countdown() {
@@ -223,7 +215,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
           tapCount = 0;
           logTapTrail = "";
           showLogTapTrail = true;
-          // showGallery = false;
         });
       } else {
         setState(() {
@@ -268,7 +259,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
   int tapCount = 0;
   String logTapTrail = "";
   bool showLogTapTrail = false;
-  // bool showGallery = true;
   int timerValue = 30;
   bool showTimer = false;
   late double tileSize;
@@ -379,7 +369,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(left: 40.0),
+                        margin: const EdgeInsets.only(left: 20.0),
                         child: Text(
                           'PUZZLE',
                           textDirection: TextDirection.ltr,
@@ -407,7 +397,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(left: 30.0),
+                    margin: const EdgeInsets.only(left: 20.0),
                     child: Text(
                       "REFER TIMER",
                       textDirection: TextDirection.ltr,
@@ -465,6 +455,7 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                   Container(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 20.0, vertical: 10.0),
+                      width: 400.0,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -514,7 +505,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                           ),
                         ],
                       )),
-
                   // ANCHOR Main Holding Container for tiles
                   Neumorphic(
                       style: NeumorphicStyle(
@@ -551,9 +541,9 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                                       child: GestureDetector(
                                           onTap: onTapActivated
                                               ? () {
-                                                  debugPrint('${i + 1}');
-                                                  debugPrint(
-                                                      '${position[i.toString()]}');
+                                                  // debugPrint('${i + 1}');
+                                                  // debugPrint(
+                                                  //     '${position[i.toString()]}');
                                                   List listPath = possiblePaths[
                                                       position[i.toString()]];
                                                   setState(() {
@@ -625,8 +615,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                                               surfaceIntensity: 0.8,
                                               shadowLightColor:
                                                   Colors.transparent,
-                                              color: Color(int.parse(
-                                                  userConfig['tile_color'])),
                                             ),
                                             child: SizedBox(
                                                 width: tileSize,
@@ -643,27 +631,10 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                                       ConnectionState.waiting &&
                                   !snapshot.hasData) {
                                 return Center(
-                                  child: SizedBox(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    child: Neumorphic(
-                                      style: NeumorphicStyle(
-                                        shape: NeumorphicShape.flat,
-                                        boxShape:
-                                            const NeumorphicBoxShape.circle(),
-                                        depth: 10.0,
-                                        intensity: 0.8,
-                                        surfaceIntensity: 0.8,
-                                        color: Color(int.parse(userConfig[
-                                            'secondary_background'])),
-                                      ),
-                                      child: CircularProgressIndicator(
-                                        value: 0.6,
-                                        strokeWidth: 10.0,
-                                        color: Color(
-                                            int.parse(userConfig['secondary'])),
-                                      ),
-                                    ),
+                                  child: SpinKitChasingDots(
+                                    color: Color(int.parse(
+                                        userConfig['secondary_background'])),
+                                    size: 250.0,
                                   ),
                                 );
                               }
@@ -671,27 +642,10 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                                       ConnectionState.waiting &&
                                   snapshot.hasData) {
                                 return Center(
-                                  child: SizedBox(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    child: Neumorphic(
-                                      style: NeumorphicStyle(
-                                        shape: NeumorphicShape.flat,
-                                        boxShape:
-                                            const NeumorphicBoxShape.circle(),
-                                        depth: 10.0,
-                                        intensity: 0.8,
-                                        surfaceIntensity: 0.8,
-                                        color: Color(int.parse(userConfig[
-                                            'secondary_background'])),
-                                      ),
-                                      child: CircularProgressIndicator(
-                                        value: 0.6,
-                                        strokeWidth: 5.0,
-                                        color: Color(
-                                            int.parse(userConfig['secondary'])),
-                                      ),
-                                    ),
+                                  child: SpinKitChasingDots(
+                                    color: Color(int.parse(
+                                        userConfig['secondary_background'])),
+                                    size: 250.0,
                                   ),
                                 );
                               } else if (snapshot.hasError) {
@@ -708,60 +662,63 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                             }),
                       )),
                   // ANCHOR Tile Size Slider
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        width: (mainContainerSize / 2).floor().toDouble(),
-                        child: NeumorphicSlider(
-                          min:
-                              ((mainContainerSize / tileNo).floor().toDouble() -
-                                      10.0) -
-                                  20.0,
-                          max: (mainContainerSize / tileNo).floor().toDouble() -
-                              10.0,
-                          value: tileSize,
-                          onChanged: (value) {
-                            setState(() {
-                              tileSize = value.toDouble();
-                            });
-                          },
-                          style: SliderStyle(
-                            depth: 5.0,
-                            variant: Color(
-                                int.parse(userConfig['secondary_background'])),
-                            accent: Color(int.parse(userConfig['primary'])),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                    width: 400.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          width: (mainContainerSize / 2).floor().toDouble(),
+                          child: NeumorphicSlider(
+                            min: ((mainContainerSize - 20.0) / tileNo)
+                                    .toDouble() -
+                                20.0,
+                            max: ((mainContainerSize - 20.0) / tileNo)
+                                .toDouble(),
+                            value: tileSize,
+                            onChanged: (value) {
+                              setState(() {
+                                tileSize = value.toDouble();
+                              });
+                            },
+                            style: SliderStyle(
+                              depth: 5.0,
+                              variant: Color(int.parse(
+                                  userConfig['secondary_background'])),
+                              accent: Color(int.parse(userConfig['primary'])),
+                            ),
                           ),
                         ),
-                      ),
-                      // ANCHOR Tile Border Radius Slider
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        width: (mainContainerSize / 2).floor().toDouble(),
-                        child: NeumorphicSlider(
-                          min: 0.0,
-                          max: (tileSize / 2).floor().toDouble(),
-                          value: tileBorderRadius,
-                          onChanged: (value) {
-                            setState(() {
-                              tileBorderRadius = value.toDouble();
-                            });
-                          },
-                          style: SliderStyle(
-                            depth: 5.0,
-                            variant: Color(
-                                int.parse(userConfig['secondary_background'])),
-                            accent: Color(int.parse(userConfig['primary'])),
+                        // ANCHOR Tile Border Radius Slider
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          width: (mainContainerSize / 2).floor().toDouble(),
+                          child: NeumorphicSlider(
+                            min: 0.0,
+                            max: (tileSize / 2).floor().toDouble(),
+                            value: tileBorderRadius,
+                            onChanged: (value) {
+                              setState(() {
+                                tileBorderRadius = value.toDouble();
+                              });
+                            },
+                            style: SliderStyle(
+                              depth: 5.0,
+                              variant: Color(int.parse(
+                                  userConfig['secondary_background'])),
+                              accent: Color(int.parse(userConfig['primary'])),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-
                   // ANCHOR Container for row of start and reset
                   Container(
                     margin: const EdgeInsets.only(bottom: 20.0, top: 20.0),
+                    width: 400.0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -879,7 +836,6 @@ class _NReferTimerPageState extends State<NReferTimerPage> {
                                       tapCount = 0;
                                       logTapTrail = "";
                                       showLogTapTrail = false;
-                                      // showGallery = true;
                                       showTimer = false;
                                       timerValue = 30;
                                     });

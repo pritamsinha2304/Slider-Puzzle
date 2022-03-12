@@ -9,6 +9,8 @@
 .history
 .svn/
 .env
+/config/
+.runtimeconfig.json
 
 # IntelliJ related
 *.iml

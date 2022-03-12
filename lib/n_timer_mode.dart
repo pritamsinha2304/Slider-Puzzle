@@ -1,13 +1,6 @@
-import 'dart:async';
-import 'package:page_transition/page_transition.dart';
-import 'package:slide_puzzle/n_menu_page.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'config/config_page.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:image/image.dart' as imglib;
-import 'dart:typed_data';
+import 'lib.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as imglib;
 
 class NTimerPage extends StatefulWidget {
   final int tileNo;
@@ -39,7 +32,7 @@ class _NTimerPageState extends State<NTimerPage> {
   List coord() {
     double step = 2.0 / (tileNo.toDouble() - 1.0);
     List a = [for (int i = 0; i < tileNo; i++) -1.0 + (step * i.toDouble())];
-    print(a);
+    // print(a);
     return a;
   }
 
@@ -93,9 +86,9 @@ class _NTimerPageState extends State<NTimerPage> {
     originalPosition.addAll(dummyOriginalPosition);
     position.addAll(dummyOriginalPosition);
     possiblePaths.addAll(dummyPossiblePaths);
-    print(dummyOriginalPosition);
-    print(dummyPossiblePaths);
-    print(count);
+    // print(dummyOriginalPosition);
+    // print(dummyPossiblePaths);
+    // print(count);
   }
 
   // Shuffled position is required for reset
@@ -146,7 +139,7 @@ class _NTimerPageState extends State<NTimerPage> {
     for (var img in parts) {
       output.add(Image.memory(Uint8List.fromList(imglib.encodeJpg(img))));
     }
-    print(output);
+    // print(output);
     return output;
   }
 
@@ -177,7 +170,7 @@ class _NTimerPageState extends State<NTimerPage> {
     for (var img in parts) {
       output.add(Image.memory(Uint8List.fromList(imglib.encodeJpg(img))));
     }
-    print(output);
+    // print(output);
     return output;
   }
 
@@ -193,18 +186,18 @@ class _NTimerPageState extends State<NTimerPage> {
     if (tileBackgroundOption == 'IMAGE') {
       _splittedImage =
           Future.delayed(const Duration(seconds: 2)).then((_) async {
-        print('initstate splitted image run first');
+        // print('initstate splitted image run first');
         return await splitImage('assets/images/$localImageName');
       });
     }
     if (tileBackgroundOption == 'RANDOM IMAGE') {
       _splittedImage =
           Future.delayed(const Duration(seconds: 2)).then((_) async {
-        print('initstate splitted image run first');
+        // print('initstate splitted image run first');
         return await networkSplitImage(Uri.parse(networkImageUrl));
       });
     }
-    tileSize = (mainContainerSize / tileNo).floor().toDouble() - 10.0;
+    tileSize = ((mainContainerSize - 20.0) / tileNo).toDouble();
     timerValue = 1000 * ((tileNo / 2).floor());
   }
 
@@ -229,15 +222,16 @@ class _NTimerPageState extends State<NTimerPage> {
         setState(() {
           showTimer = false;
           onTapActivated = false;
-          showTimeUpText = true;
           if (userConfig['interface_sound'] == "on") {
             audioCacheInterface.play('select-click.wav',
                 volume: double.parse(userConfig['interface_sound_volume']));
           }
           _showTimeUpTextAlert();
           timerStarted = false;
-          // timeUpText = "Time's Up";
         });
+      }
+      if (start) {
+        timer.cancel();
       } else {
         setState(() {
           timerValue--;
@@ -309,14 +303,10 @@ class _NTimerPageState extends State<NTimerPage> {
   bool showContainerId = true;
   String logTapTrail = "";
   bool showLogTapTrail = false;
-  // bool showGallery =
-  //     userConfig['tile_background_option'] == 'image' ? true : false;
   late int timerValue;
   bool showTimer = false;
-  bool showTimeUpText = false;
   late double tileSize;
   double tileBorderRadius = 10.0;
-  //String timeUpText = "";
   bool timerStarted = false;
 
   @override
@@ -425,7 +415,7 @@ class _NTimerPageState extends State<NTimerPage> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(left: 40.0),
+                        margin: const EdgeInsets.only(left: 20.0),
                         child: Text(
                           'PUZZLE',
                           textDirection: TextDirection.ltr,
@@ -511,6 +501,7 @@ class _NTimerPageState extends State<NTimerPage> {
                   Container(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 20.0, vertical: 10.0),
+                      width: 400.0,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -577,6 +568,10 @@ class _NTimerPageState extends State<NTimerPage> {
                                   trackDepth: 7.0,
                                   thumbDepth: 7.0,
                                   thumbShape: NeumorphicShape.concave,
+                                  activeThumbColor: Color(int.parse(
+                                      userConfig['secondary_background'])),
+                                  inactiveThumbColor: Color(int.parse(
+                                      userConfig['secondary_background'])),
                                   activeTrackColor:
                                       Color(int.parse(userConfig['primary'])),
                                   inactiveTrackColor: Color(int.parse(
@@ -635,9 +630,9 @@ class _NTimerPageState extends State<NTimerPage> {
                                         child: GestureDetector(
                                             onTap: onTapActivated
                                                 ? () {
-                                                    debugPrint('${i + 1}');
-                                                    debugPrint(
-                                                        '${position[i.toString()]}');
+                                                    // debugPrint('${i + 1}');
+                                                    // debugPrint(
+                                                    //     '${position[i.toString()]}');
                                                     List listPath =
                                                         possiblePaths[position[
                                                             i.toString()]];
@@ -680,6 +675,7 @@ class _NTimerPageState extends State<NTimerPage> {
                                                         originalPositionReset =
                                                             false;
                                                         start = true;
+                                                        timerStarted = false;
                                                         logTapTrail =
                                                             logTapTrail + "End";
 
@@ -699,20 +695,18 @@ class _NTimerPageState extends State<NTimerPage> {
                                                 : null,
                                             child: Neumorphic(
                                               style: NeumorphicStyle(
-                                                  shape: NeumorphicShape.flat,
-                                                  boxShape: NeumorphicBoxShape
-                                                      .roundRect(BorderRadius
-                                                          .all(Radius.circular(
-                                                              tileBorderRadius))),
-                                                  // depth: Random().nextInt(20).toDouble(),
-                                                  depth: 10.0,
-                                                  intensity: 0.8,
-                                                  surfaceIntensity: 0.8,
-                                                  shadowLightColor:
-                                                      Colors.transparent,
-                                                  color: Color(int.parse(
-                                                      userConfig[
-                                                          'tile_color']))),
+                                                shape: NeumorphicShape.flat,
+                                                boxShape: NeumorphicBoxShape
+                                                    .roundRect(BorderRadius.all(
+                                                        Radius.circular(
+                                                            tileBorderRadius))),
+                                                // depth: Random().nextInt(20).toDouble(),
+                                                depth: 10.0,
+                                                intensity: 0.8,
+                                                surfaceIntensity: 0.8,
+                                                shadowLightColor:
+                                                    Colors.transparent,
+                                              ),
                                               child: SizedBox(
                                                   width: tileSize,
                                                   height: tileSize,
@@ -728,27 +722,10 @@ class _NTimerPageState extends State<NTimerPage> {
                                         ConnectionState.waiting &&
                                     !snapshot.hasData) {
                                   return Center(
-                                    child: SizedBox(
-                                      width: 100.0,
-                                      height: 100.0,
-                                      child: Neumorphic(
-                                        style: NeumorphicStyle(
-                                          shape: NeumorphicShape.flat,
-                                          boxShape:
-                                              const NeumorphicBoxShape.circle(),
-                                          depth: 10.0,
-                                          intensity: 0.8,
-                                          surfaceIntensity: 0.8,
-                                          color: Color(int.parse(userConfig[
-                                              'secondary_background'])),
-                                        ),
-                                        child: CircularProgressIndicator(
-                                          value: 0.6,
-                                          strokeWidth: 10.0,
-                                          color: Color(int.parse(
-                                              userConfig['secondary'])),
-                                        ),
-                                      ),
+                                    child: SpinKitChasingDots(
+                                      color: Color(int.parse(
+                                          userConfig['secondary_background'])),
+                                      size: 250.0,
                                     ),
                                   );
                                 }
@@ -756,27 +733,10 @@ class _NTimerPageState extends State<NTimerPage> {
                                         ConnectionState.waiting &&
                                     snapshot.hasData) {
                                   return Center(
-                                    child: SizedBox(
-                                      width: 100.0,
-                                      height: 100.0,
-                                      child: Neumorphic(
-                                        style: NeumorphicStyle(
-                                          shape: NeumorphicShape.flat,
-                                          boxShape:
-                                              const NeumorphicBoxShape.circle(),
-                                          depth: 10.0,
-                                          intensity: 0.8,
-                                          surfaceIntensity: 0.8,
-                                          color: Color(int.parse(userConfig[
-                                              'secondary_background'])),
-                                        ),
-                                        child: CircularProgressIndicator(
-                                          value: 0.6,
-                                          strokeWidth: 5.0,
-                                          color: Color(int.parse(
-                                              userConfig['secondary'])),
-                                        ),
-                                      ),
+                                    child: SpinKitChasingDots(
+                                      color: Color(int.parse(
+                                          userConfig['secondary_background'])),
+                                      size: 250.0,
                                     ),
                                   );
                                 } else if (snapshot.hasError) {
@@ -800,9 +760,9 @@ class _NTimerPageState extends State<NTimerPage> {
                                   child: GestureDetector(
                                       onTap: onTapActivated
                                           ? () {
-                                              debugPrint('${i + 1}');
-                                              debugPrint(
-                                                  '${position[i.toString()]}');
+                                              // debugPrint('${i + 1}');
+                                              // debugPrint(
+                                              //     '${position[i.toString()]}');
                                               List listPath = possiblePaths[
                                                   position[i.toString()]];
                                               setState(() {
@@ -839,6 +799,7 @@ class _NTimerPageState extends State<NTimerPage> {
                                                   timerValue = 10;
                                                   onTapActivated = false;
                                                   reset = false;
+                                                  timerStarted = false;
                                                   originalPositionReset = false;
                                                   start = true;
                                                   logTapTrail =
@@ -878,8 +839,6 @@ class _NTimerPageState extends State<NTimerPage> {
                                               child: Container(
                                                   alignment: Alignment.center,
                                                   decoration: BoxDecoration(
-                                                      color: NeumorphicTheme
-                                                          .baseColor(context),
                                                       borderRadius: BorderRadius
                                                           .all(Radius.circular(
                                                               tileBorderRadius))),
@@ -896,7 +855,7 @@ class _NTimerPageState extends State<NTimerPage> {
                                                         fontFamily: "BebasNeue",
                                                         color: Color(int.parse(
                                                             userConfig[
-                                                                'secondary']))),
+                                                                'primary']))),
                                                   )),
                                             )
                                           : Neumorphic(
@@ -906,7 +865,6 @@ class _NTimerPageState extends State<NTimerPage> {
                                                       .roundRect(BorderRadius
                                                           .all(Radius.circular(
                                                               tileBorderRadius))),
-                                                  // depth: Random().nextInt(20).toDouble(),
                                                   depth: 10.0,
                                                   intensity: 0.8,
                                                   surfaceIntensity: 0.8,
@@ -936,7 +894,7 @@ class _NTimerPageState extends State<NTimerPage> {
                                                         fontFamily: "BebasNeue",
                                                         color: Color(int.parse(
                                                             userConfig[
-                                                                'secondary']))),
+                                                                'primary']))),
                                                   )),
                                             )),
                                 ),
@@ -944,86 +902,63 @@ class _NTimerPageState extends State<NTimerPage> {
                     ),
                   ),
                   // ANCHOR Tile Size Slider
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        width: (mainContainerSize / 2).floor().toDouble(),
-                        child: NeumorphicSlider(
-                          min:
-                              ((mainContainerSize / tileNo).floor().toDouble() -
-                                      10.0) -
-                                  20.0,
-                          max: (mainContainerSize / tileNo).floor().toDouble() -
-                              10.0,
-                          value: tileSize,
-                          onChanged: (value) {
-                            setState(() {
-                              tileSize = value.toDouble();
-                            });
-                          },
-                          style: SliderStyle(
-                            depth: 5.0,
-                            variant: Color(
-                                int.parse(userConfig['secondary_background'])),
-                            accent: Color(int.parse(userConfig['primary'])),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                    width: 400.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          width: (mainContainerSize / 2).floor().toDouble(),
+                          child: NeumorphicSlider(
+                            min: ((mainContainerSize - 20.0) / tileNo)
+                                    .toDouble() -
+                                20.0,
+                            max: ((mainContainerSize - 20.0) / tileNo)
+                                .toDouble(),
+                            value: tileSize,
+                            onChanged: (value) {
+                              setState(() {
+                                tileSize = value.toDouble();
+                              });
+                            },
+                            style: SliderStyle(
+                              depth: 5.0,
+                              variant: Color(int.parse(
+                                  userConfig['secondary_background'])),
+                              accent: Color(int.parse(userConfig['primary'])),
+                            ),
                           ),
                         ),
-                      ),
-                      // ANCHOR Tile Border Radius Slider
-                      Container(
-                        margin: const EdgeInsets.only(top: 10.0),
-                        width: (mainContainerSize / 2).floor().toDouble(),
-                        child: NeumorphicSlider(
-                          min: 0.0,
-                          max: (tileSize / 2).floor().toDouble(),
-                          value: tileBorderRadius,
-                          onChanged: (value) {
-                            setState(() {
-                              tileBorderRadius = value.toDouble();
-                            });
-                          },
-                          style: SliderStyle(
-                            depth: 5.0,
-                            variant: Color(
-                                int.parse(userConfig['secondary_background'])),
-                            accent: Color(int.parse(userConfig['primary'])),
+                        // ANCHOR Tile Border Radius Slider
+                        Container(
+                          margin: const EdgeInsets.only(top: 10.0),
+                          width: (mainContainerSize / 2).floor().toDouble(),
+                          child: NeumorphicSlider(
+                            min: 0.0,
+                            max: (tileSize / 2).floor().toDouble(),
+                            value: tileBorderRadius,
+                            onChanged: (value) {
+                              setState(() {
+                                tileBorderRadius = value.toDouble();
+                              });
+                            },
+                            style: SliderStyle(
+                              depth: 5.0,
+                              variant: Color(int.parse(
+                                  userConfig['secondary_background'])),
+                              accent: Color(int.parse(userConfig['primary'])),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  // ANCHOR Solved successfully Text
-                  if (solved)
-                    SizedBox(
-                      width: 400.0,
-                      child: Neumorphic(
-                        margin: const EdgeInsets.only(top: 20.0),
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        style: NeumorphicStyle(
-                            shape: NeumorphicShape.flat,
-                            depth: 10.0,
-                            intensity: 0.8,
-                            surfaceIntensity: 0.8,
-                            color: Color(
-                                int.parse(userConfig['secondary_background']))),
-                        child: Center(
-                          child: Text(
-                            'Solved',
-                            textDirection: TextDirection.ltr,
-                            style: TextStyle(
-                                fontSize: 30.0,
-                                color:
-                                    Color(int.parse(userConfig['secondary'])),
-                                fontFamily: "BebasNeue"),
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
+                  ),
                   // ANCHOR Container for row of start and reset
                   Container(
                     margin: const EdgeInsets.only(bottom: 20.0, top: 20.0),
+                    width: 400.0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -1045,21 +980,18 @@ class _NTimerPageState extends State<NTimerPage> {
                                               'interface_sound_volume']));
                                     }
                                     shuffle();
-                                    _countdown();
-                                    Future.delayed(const Duration(seconds: 1),
-                                        () {
-                                      setState(() {
-                                        onTapActivated = true;
-                                        reset = true;
-                                        start = false;
-                                        originalPositionReset = true;
-                                        solved = false;
-                                        tapCount = 0;
-                                        logTapTrail = "";
-                                        showLogTapTrail = true;
-                                        timerStarted = true;
-                                      });
+                                    setState(() {
+                                      onTapActivated = true;
+                                      reset = true;
+                                      start = false;
+                                      originalPositionReset = true;
+                                      solved = false;
+                                      tapCount = 0;
+                                      logTapTrail = "";
+                                      showLogTapTrail = true;
+                                      timerStarted = true;
                                     });
+                                    _countdown();
                                   }
                                 : null,
                             child: Row(
@@ -1103,7 +1035,6 @@ class _NTimerPageState extends State<NTimerPage> {
                                           shuffledCurrentEmptySpot;
                                       logTapTrail = "";
                                       tapCount = 0;
-                                      // timeUpText = "";
                                       timerValue =
                                           1000 * ((tileNo / 2).floor());
                                       timerStarted = true;
@@ -1162,7 +1093,6 @@ class _NTimerPageState extends State<NTimerPage> {
                                       timerValue =
                                           1000 * ((tileNo / 2).floor());
                                       showTimer = false;
-                                      showTimeUpText = false;
                                       timerStarted = false;
                                     });
                                   }

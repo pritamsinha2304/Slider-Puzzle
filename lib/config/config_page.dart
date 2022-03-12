@@ -6,12 +6,11 @@ Map defaultConfig = {
   "secondary": "0xFFFF5916",
   "primary_background": "0xFFF8F5DB",
   "secondary_background": "0xFFEAE9E0",
-  "tile_background_option": "same_color",
   "tile_color": "0xFFEAE9E0",
   "curve": "Ease",
   "theme": "warm",
-  "interface_sound": "on",
-  "background_sound": "on",
+  "interface_sound": "off",
+  "background_sound": "off",
   "background_sound_option": "Music-Box-Puzzles",
   "interface_sound_volume": "0.3",
   "background_sound_volume": "0.2"
@@ -85,19 +84,6 @@ Map themes = {
   }
 };
 
-// List<String> imageName = [
-//   "1.jpg",
-//   "2.jpg",
-//   "3.jpg",
-//   "4.jpg",
-//   "5.jpg",
-//   "6.jpg",
-//   "7.jpg",
-//   "8.jpg",
-//   "9.jpg",
-//   "10.jpg"
-// ];
-
 List<String> imageName = [];
 
 List<String> audioName = [];
@@ -106,3 +92,6 @@ late AudioPlayer audioPlayerBackground;
 late AudioCache audioCacheBackground;
 late AudioPlayer audioPlayerInterface;
 late AudioCache audioCacheInterface;
+
+const String accessKey = "1pda_6hCsPl22uGmlTwVH78rzmQ73tqZP0ThaQfZG0w";
+const String secretKey = "-6V-eW3qIbxjvSl51J1i5m-714K6gn-LSuIqNNUOegM";

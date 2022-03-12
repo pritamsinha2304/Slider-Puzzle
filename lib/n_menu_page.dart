@@ -1,15 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:slide_puzzle/n_settings.dart';
-import 'config/config_page.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:slide_puzzle/n_basic_mode.dart';
-import 'package:slide_puzzle/n_refer_timer_mode.dart';
-import 'package:slide_puzzle/n_timer_mode.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:unsplash_client/unsplash_client.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'lib.dart';
 
 class NMenuPage extends StatefulWidget {
   const NMenuPage({
@@ -44,9 +33,11 @@ class _NMenuPageState extends State<NMenuPage> {
   late UnsplashClient client;
 
   Future<Uri> randomImages() async {
-    final photos = await client.photos.random(count: 1).goAndGet();
-    final photo = photos.first;
-    final img = photo.urls.raw.resizePhoto(width: 1920, height: 1080);
+    final Uri img = ((await client.photos.random(count: 1).goAndGet())
+        .first
+        .urls
+        .raw
+        .resizePhoto(width: 1920, height: 1080));
     networkImage = img.toString();
     // print(img);
     // print(networkImage);
@@ -60,11 +51,12 @@ class _NMenuPageState extends State<NMenuPage> {
       client = UnsplashClient(
         settings: ClientSettings(
             credentials: AppCredentials(
-          accessKey: dotenv.env['ACCESS_KEY']!,
-          secretKey: dotenv.env['SECRET_KEY'],
+          accessKey: dotenv.get('ACCESS_KEY', fallback: accessKey),
+          secretKey: dotenv.get('SECRET_KEY', fallback: secretKey),
         )),
       );
     });
+
     _audioCacheInterface = audioCacheInterface;
   }
 
@@ -167,7 +159,7 @@ class _NMenuPageState extends State<NMenuPage> {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(left: 50.0),
+                    margin: const EdgeInsets.only(left: 30.0),
                     child: Text(
                       'PUZZLE',
                       textDirection: TextDirection.ltr,
@@ -779,34 +771,28 @@ class _NMenuPageState extends State<NMenuPage> {
                       ],
                     ),
                   if (selectedName == 'IMAGE')
-                    Neumorphic(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 15.0),
+                    Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5.0),
-                      style: NeumorphicStyle(
-                        shape: NeumorphicShape.flat,
-                        boxShape: NeumorphicBoxShape.roundRect(
-                            const BorderRadius.all(Radius.circular(10.0))),
-                        depth: 10.0,
-                        intensity: 0.8,
-                        surfaceIntensity: 0.8,
-                        color: Color(
-                            int.parse(userConfig['secondary_background'])),
-                      ),
+                          vertical: 10.0, horizontal: 10.0),
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
+                          Container(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
                             width: 280.0,
                             child: CarouselSlider(
                               options: CarouselOptions(
-                                height: 120.0,
+                                height: 400.0,
+                                scrollDirection: Axis.vertical,
                                 enableInfiniteScroll: false,
                                 viewportFraction: 0.5,
                                 reverse: true,
                                 scrollPhysics: const BouncingScrollPhysics(),
                                 enlargeCenterPage: true,
+                                autoPlay: true,
+                                autoPlayInterval: const Duration(seconds: 2),
                               ),
                               items: imageName.map((imageName) {
                                 return Builder(
@@ -848,8 +834,8 @@ class _NMenuPageState extends State<NMenuPage> {
                                   const BorderRadius.all(Radius.circular(10.0)),
                               child: Image.asset(
                                 'assets/images/$selectedImage',
-                                width: 80.0,
-                                height: 80.0,
+                                width: kIsWeb ? 120.0 : 100.0,
+                                height: kIsWeb ? 120.0 : 100.0,
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -858,88 +844,74 @@ class _NMenuPageState extends State<NMenuPage> {
                       ),
                     ),
                   if (selectedName == 'RANDOM IMAGE')
-                    Neumorphic(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 15.0),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        style: NeumorphicStyle(
-                          shape: NeumorphicShape.flat,
-                          boxShape: NeumorphicBoxShape.roundRect(
-                              const BorderRadius.all(Radius.circular(10.0))),
-                          depth: 10.0,
-                          intensity: 0.8,
-                          surfaceIntensity: 0.8,
-                          color: Color(
-                              int.parse(userConfig['secondary_background'])),
-                        ),
-                        child: FutureBuilder(
-                            future: randomImages(),
-                            builder: ((context, AsyncSnapshot<Uri> snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData) {
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(10.0)),
-                                      child: Image.network(
-                                        '${snapshot.data!}',
-                                        fit: BoxFit.fill,
-                                        width: 290,
-                                      ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: FutureBuilder(
+                          future: randomImages(),
+                          builder: ((context, AsyncSnapshot<Uri> snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(10.0)),
+                                    child: Image.network(
+                                      "${snapshot.data!}",
+                                      fit: BoxFit.fill,
+                                      width: 290,
                                     ),
-                                    NeumorphicButton(
-                                      style: NeumorphicStyle(
-                                          shape: NeumorphicShape.flat,
-                                          boxShape:
-                                              const NeumorphicBoxShape.circle(),
-                                          depth: 5.0,
-                                          intensity: 0.8,
-                                          surfaceIntensity: 0.8,
-                                          color: Color(int.parse(userConfig[
-                                              'secondary_background']))),
-                                      child: Icon(
-                                        Icons.refresh_rounded,
-                                        size: 30.0,
-                                        color: Color(
-                                            int.parse(userConfig['primary'])),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {});
-                                      },
-                                    )
-                                  ],
-                                );
-                              }
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  !snapshot.hasData) {
-                                return CircularProgressIndicator(
-                                  strokeWidth: 6.0,
-                                  color:
-                                      Color(int.parse(userConfig['secondary'])),
-                                );
-                              }
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  snapshot.hasData) {
-                                return SizedBox(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 6.0,
-                                    color: Color(
-                                        int.parse(userConfig['secondary'])),
                                   ),
-                                );
-                              } else {
-                                return const SizedBox();
-                              }
-                            }))),
+                                  NeumorphicButton(
+                                    style: NeumorphicStyle(
+                                        shape: NeumorphicShape.flat,
+                                        boxShape:
+                                            const NeumorphicBoxShape.circle(),
+                                        depth: 5.0,
+                                        intensity: 0.8,
+                                        surfaceIntensity: 0.8,
+                                        color: Color(int.parse(userConfig[
+                                            'secondary_background']))),
+                                    child: Icon(
+                                      Icons.refresh_rounded,
+                                      size: 30.0,
+                                      color: Color(
+                                          int.parse(userConfig['primary'])),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {});
+                                    },
+                                  )
+                                ],
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting &&
+                                !snapshot.hasData) {
+                              return SpinKitChasingDots(
+                                color:
+                                    Color(int.parse(userConfig['secondary'])),
+                                size: 100.0,
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting &&
+                                snapshot.hasData) {
+                              return SpinKitChasingDots(
+                                color:
+                                    Color(int.parse(userConfig['secondary'])),
+                                size: 100.0,
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          })),
+                    ),
                   Container(
                     width: 2.0,
                     height: 50.0,
@@ -1038,7 +1010,11 @@ class _NMenuPageState extends State<NMenuPage> {
                           if (mode[selectedIndexMode] == 'TIMER') {
                             if (userConfig['interface_sound'] == "on") {
                               _audioCacheInterface
-                                  .play('page-back-chime.wav')
+                                  .play(
+                                'page-back-chime.wav',
+                                volume: double.parse(
+                                    userConfig['interface_sound_volume']),
+                              )
                                   .then((value) {
                                 Navigator.push(
                                   context,

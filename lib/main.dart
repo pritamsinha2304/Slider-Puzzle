@@ -1,13 +1,4 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'config/config_page.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
-import 'package:animated_text_kit/animated_text_kit.dart';
-import 'n_menu_page.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'lib.dart';
 import 'package:path/path.dart' as path;
 
 void main() {
@@ -117,18 +108,18 @@ class _MainPageState extends State<MainPage> {
               jsonObject.removeWhere((k, v) => toRemove.contains(k));
               // Assign the values to config page
               userConfig.addAll(jsonObject);
-              print(userConfig);
-              debugPrint(
-                  'Fetched data from file system and updated userconfig');
+              // print(userConfig);
+              // debugPrint(
+              //    'Fetched data from file system and updated userconfig');
               _writeValues(path, json.encode(jsonObject)).then((value) {
-                debugPrint(
-                    'Write successful to file bcoz 2 file are different');
+                // debugPrint(
+                //    'Write successful to file bcoz 2 file are different');
               });
             } else {
               // Assign the values to config page
               userConfig.addAll(jsonObject);
-              print(userConfig);
-              debugPrint('Updated Config page');
+              // print(userConfig);
+              // debugPrint('Updated Config page');
             }
           });
 
@@ -139,7 +130,7 @@ class _MainPageState extends State<MainPage> {
       else {
         // Create file
         return _createConfigFile(path).then((bool response) {
-          debugPrint('File created successfully');
+          // debugPrint('File created successfully');
           // File created successfully
           // Read default data from assets folder
           return parseJsonFromAssets('assets/config/config_default.json')
@@ -149,11 +140,11 @@ class _MainPageState extends State<MainPage> {
 
             // Write these values to file
             _writeValues(path, json.encode(values)).then((value) {
-              debugPrint('Write successful to file');
+              // debugPrint('Write successful to file');
             });
             // Also we need to apply the values to config page, since
             userConfig.addAll(values);
-            debugPrint('Write successful to config page');
+            // debugPrint('Write successful to config page');
 
             return configSettings;
           });
@@ -174,7 +165,7 @@ class _MainPageState extends State<MainPage> {
       String fileName = path.basename(File(audioPath).path);
       audioName.add(fileName);
     }
-    print(audioName);
+    // print(audioName);
     return audioName;
   }
 
@@ -190,17 +181,22 @@ class _MainPageState extends State<MainPage> {
       String fileName = path.basename(File(imagePath).path);
       imageName.add(fileName);
     }
-    print(imageName);
+    // print(imageName);
     return imageName;
   }
 
   @override
   void initState() {
     super.initState();
-    _configuration =
-        Future.delayed(const Duration(seconds: 10)).then((_) async {
-      return await _checkCfgExists();
-    });
+
+    if (!kIsWeb) {
+      _configuration =
+          Future.delayed(const Duration(seconds: 10)).then((_) async {
+        return await _checkCfgExists();
+      });
+    } else {
+      userConfig = Map.from(defaultConfig);
+    }
 
     _audioCacheBackground = AudioCache(
         prefix: 'assets/audios/background/',
@@ -222,11 +218,18 @@ class _MainPageState extends State<MainPage> {
       imageName = value;
     });
 
-    _allFutures = Future.wait([
-      _configuration,
-      _audioCacheBackgroundFuture,
-      _audioCacheInterfaceFuture,
-    ]);
+    if (!kIsWeb) {
+      _allFutures = Future.wait([
+        _configuration,
+        _audioCacheBackgroundFuture,
+        _audioCacheInterfaceFuture,
+      ]);
+    } else {
+      _allFutures = Future.wait([
+        _audioCacheBackgroundFuture,
+        _audioCacheInterfaceFuture,
+      ]);
+    }
 
     _allFutures.then((value) async {
       audioPlayerBackground = _audioPlayerBackground;
@@ -236,271 +239,527 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-// Here I am using configSettings(in snapshot) value to assign. Though we can also
-  // use config page's userConfig data, because it is already been updated before
-  // building the widget tree.
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: const MediaQueryData(),
-      child: FutureBuilder(
-        // future: _configuration,
-        future: _allFutures,
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            if (snapshot.data[0]!['background_sound'] == "on") {
-              _audioCacheBackground.loop(
-                "${snapshot.data[0]!['background_sound_option']}.ogg",
-                volume:
-                    double.parse(snapshot.data[0]!['background_sound_volume']),
-              );
-            }
-            return NeumorphicApp(
-              debugShowCheckedModeBanner: false,
-              home: Scaffold(
-                backgroundColor:
-                    Color(int.parse(snapshot.data[0]!['primary_background'])),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 20.0),
-                        width: 270.0,
-                        height: 270.0,
-                        child: Stack(children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: SizedBox(
-                              width: 200.0,
-                              height: 200.0,
-                              child: Neumorphic(
-                                style: NeumorphicStyle(
-                                  shape: NeumorphicShape.flat,
-                                  boxShape: const NeumorphicBoxShape.circle(),
-                                  depth: 5.0,
-                                  intensity: 0.8,
-                                  surfaceIntensity: 0.8,
-                                  color: Color(
-                                      int.parse(snapshot.data[0]!['primary'])),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: SizedBox(
-                              width: 200.0,
-                              height: 200.0,
-                              child: Neumorphic(
-                                style: NeumorphicStyle(
-                                  shape: NeumorphicShape.flat,
-                                  boxShape: const NeumorphicBoxShape.circle(),
-                                  depth: 5.0,
-                                  intensity: 0.8,
-                                  surfaceIntensity: 0.8,
-                                  color: Color(int.parse(
-                                      snapshot.data[0]!['secondary'])),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 50.0),
-                        height: 200.0,
-                        child: Stack(
-                          children: [
+    // ANCHOR Android
+    if (!kIsWeb) {
+      return MediaQuery(
+        data: const MediaQueryData(),
+        child: FutureBuilder(
+          future: _allFutures,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              if (snapshot.data[0]!['background_sound'] == "on") {
+                _audioCacheBackground.loop(
+                  "${snapshot.data[0]!['background_sound_option']}.ogg",
+                  volume: double.parse(
+                      snapshot.data[0]!['background_sound_volume']),
+                );
+              }
+              return NeumorphicApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(
+                  backgroundColor:
+                      Color(int.parse(snapshot.data[0]!['primary_background'])),
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20.0),
+                          width: 270.0,
+                          height: 270.0,
+                          child: Stack(children: [
                             Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                'SLIDER',
-                                textDirection: TextDirection.ltr,
-                                style: TextStyle(
-                                  fontFamily: "BebasNeue",
-                                  fontSize: 130.0,
-                                  color: Color(
-                                      int.parse(snapshot.data[0]!['primary'])),
+                              alignment: Alignment.topLeft,
+                              child: SizedBox(
+                                width: 200.0,
+                                height: 200.0,
+                                child: Neumorphic(
+                                  style: NeumorphicStyle(
+                                    shape: NeumorphicShape.flat,
+                                    boxShape: const NeumorphicBoxShape.circle(),
+                                    depth: 5.0,
+                                    intensity: 0.8,
+                                    surfaceIntensity: 0.8,
+                                    color: Color(int.parse(
+                                        snapshot.data[0]!['primary'])),
+                                  ),
                                 ),
                               ),
                             ),
                             Align(
                               alignment: Alignment.bottomRight,
-                              child: Text(
-                                'PUZZLE',
-                                textDirection: TextDirection.ltr,
-                                style: TextStyle(
-                                  fontFamily: "BebasNeue",
-                                  fontSize: 50.0,
-                                  color: Color(int.parse(
-                                      snapshot.data[0]!['secondary'])),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 50.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 30.0,
-                              color: Color(
-                                  int.parse(snapshot.data[0]!['primary'])),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios_rounded,
-                              size: 30.0,
-                              color: Color(
-                                  int.parse(snapshot.data[0]!['primary'])),
-                            ),
-                            Builder(builder: (context) {
-                              return NeumorphicButton(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 20.0),
-                                onPressed: () {
-                                  if (snapshot.data[0]!['interface_sound'] ==
-                                      'on') {
-                                    _audioCacheInterface.play(
-                                        'page-back-chime.wav',
-                                        volume: double.parse(snapshot.data[0]![
-                                            'interface_sound_volume']),
-                                        mode: PlayerMode.MEDIA_PLAYER);
-                                  }
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: const NMenuPage(),
-                                        type: PageTransitionType
-                                            .rightToLeftWithFade),
-                                  );
-                                },
-                                style: NeumorphicStyle(
+                              child: SizedBox(
+                                width: 200.0,
+                                height: 200.0,
+                                child: Neumorphic(
+                                  style: NeumorphicStyle(
                                     shape: NeumorphicShape.flat,
-                                    boxShape: NeumorphicBoxShape.roundRect(
-                                        const BorderRadius.all(
-                                            Radius.circular(10.0))),
-                                    depth: 0.0,
+                                    boxShape: const NeumorphicBoxShape.circle(),
+                                    depth: 5.0,
                                     intensity: 0.8,
                                     surfaceIntensity: 0.8,
-                                    color: Color(int.parse(snapshot
-                                        .data[0]!['primary_background']))),
-                                child: Text(
-                                  'START',
-                                  textDirection: TextDirection.ltr,
-                                  style: TextStyle(
                                     color: Color(int.parse(
                                         snapshot.data[0]!['secondary'])),
-                                    fontFamily: "BebasNeue",
-                                    fontSize: 40.0,
                                   ),
                                 ),
-                              );
-                            }),
-                            Icon(
-                              Icons.arrow_back_ios_rounded,
-                              size: 30.0,
-                              color: Color(
-                                  int.parse(snapshot.data[0]!['primary'])),
+                              ),
                             ),
-                            Icon(
-                              Icons.arrow_back_ios_rounded,
-                              size: 30.0,
-                              color: Color(
-                                  int.parse(snapshot.data[0]!['primary'])),
-                            ),
-                          ],
+                          ]),
                         ),
-                      )
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 50.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                          height: 200.0,
+                          width: 300.0,
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'SLIDER',
+                                  textDirection: TextDirection.ltr,
+                                  style: TextStyle(
+                                    fontFamily: "BebasNeue",
+                                    fontSize: 130.0,
+                                    color: Color(int.parse(
+                                        snapshot.data[0]!['primary'])),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  'PUZZLE',
+                                  textDirection: TextDirection.ltr,
+                                  style: TextStyle(
+                                    fontFamily: "BebasNeue",
+                                    fontSize: 50.0,
+                                    color: Color(int.parse(
+                                        snapshot.data[0]!['secondary'])),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 30.0,
+                                color: Color(
+                                    int.parse(snapshot.data[0]!['primary'])),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 30.0,
+                                color: Color(
+                                    int.parse(snapshot.data[0]!['primary'])),
+                              ),
+                              Builder(builder: (context) {
+                                return NeumorphicButton(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+                                  onPressed: () {
+                                    if (snapshot.data[0]!['interface_sound'] ==
+                                        'on') {
+                                      _audioCacheInterface.play(
+                                          'page-back-chime.wav',
+                                          volume: double.parse(snapshot.data[
+                                              0]!['interface_sound_volume']),
+                                          mode: PlayerMode.MEDIA_PLAYER);
+                                    }
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: const NMenuPage(),
+                                          type: PageTransitionType
+                                              .rightToLeftWithFade),
+                                    );
+                                  },
+                                  style: NeumorphicStyle(
+                                      shape: NeumorphicShape.flat,
+                                      boxShape: NeumorphicBoxShape.roundRect(
+                                          const BorderRadius.all(
+                                              Radius.circular(10.0))),
+                                      depth: 0.0,
+                                      intensity: 0.8,
+                                      surfaceIntensity: 0.8,
+                                      color: Color(int.parse(snapshot
+                                          .data[0]!['primary_background']))),
+                                  child: Text(
+                                    'START',
+                                    textDirection: TextDirection.ltr,
+                                    style: TextStyle(
+                                      color: Color(int.parse(
+                                          snapshot.data[0]!['secondary'])),
+                                      fontFamily: "BebasNeue",
+                                      fontSize: 40.0,
+                                    ),
+                                  ),
+                                );
+                              }),
+                              Icon(
+                                Icons.arrow_back_ios_rounded,
+                                size: 30.0,
+                                color: Color(
+                                    int.parse(snapshot.data[0]!['primary'])),
+                              ),
+                              Icon(
+                                Icons.arrow_back_ios_rounded,
+                                size: 30.0,
+                                color: Color(
+                                    int.parse(snapshot.data[0]!['primary'])),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(
+                  backgroundColor: Colors.grey[50],
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SpinKitChasingDots(
+                        color: Colors.indigo[800],
+                        size: 250.0,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(top: 20.0),
+                        child: DefaultTextStyle(
+                          style: TextStyle(
+                              fontSize: 30.0,
+                              color: Colors.indigo[900],
+                              fontFamily: "BebasNeue"),
+                          child: AnimatedTextKit(
+                              repeatForever: true,
+                              animatedTexts: [
+                                TypewriterAnimatedText(
+                                  'Fetching the code...',
+                                  speed: const Duration(milliseconds: 50),
+                                ),
+                                TypewriterAnimatedText('Fetching the config...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the logic...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the files...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the game...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the world...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the levels...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the theme...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the assets...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the tiles...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the APIs...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the design...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching...',
+                                    speed: const Duration(milliseconds: 50)),
+                              ],
+                              pause: const Duration(
+                                milliseconds: 0,
+                              )),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ),
-            );
-          } else if (snapshot.connectionState == ConnectionState.waiting &&
-              !snapshot.hasData) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              home: Scaffold(
-                backgroundColor: Colors.grey[50],
-                body: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 80.0,
-                      height: 80.0,
-                      margin: const EdgeInsets.only(bottom: 10.0),
-                      child: const CircularProgressIndicator(
-                        color: Colors.amber,
-                        strokeWidth: 5.0,
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.only(top: 20.0),
-                      child: DefaultTextStyle(
-                        style: const TextStyle(
-                            fontSize: 30.0,
-                            color: Colors.amber,
-                            fontFamily: "BebasNeue"),
-                        child: AnimatedTextKit(
-                            repeatForever: true,
-                            animatedTexts: [
-                              TypewriterAnimatedText(
-                                'Fetching the code...',
-                                speed: const Duration(milliseconds: 50),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                  child: Text(
+                snapshot.error.toString(),
+                textDirection: TextDirection.ltr,
+                style: const TextStyle(fontSize: 50.0, color: Colors.red),
+              ));
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+      );
+    }
+    // ANCHOR Web
+    else {
+      return MediaQuery(
+        data: const MediaQueryData(),
+        child: FutureBuilder(
+          future: _allFutures,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              return NeumorphicApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(
+                  backgroundColor:
+                      Color(int.parse(userConfig['primary_background'])),
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20.0),
+                          width: 270.0,
+                          height: 270.0,
+                          child: Stack(children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: SizedBox(
+                                width: 200.0,
+                                height: 200.0,
+                                child: Neumorphic(
+                                  style: NeumorphicStyle(
+                                    shape: NeumorphicShape.flat,
+                                    boxShape: const NeumorphicBoxShape.circle(),
+                                    depth: 5.0,
+                                    intensity: 0.8,
+                                    surfaceIntensity: 0.8,
+                                    color:
+                                        Color(int.parse(userConfig['primary'])),
+                                  ),
+                                ),
                               ),
-                              TypewriterAnimatedText('Fetching the config...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the logic...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the files...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the game...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the world...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the levels...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the theme...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the assets...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the tiles...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the APIs...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching the design...',
-                                  speed: const Duration(milliseconds: 50)),
-                              TypewriterAnimatedText('Fetching...',
-                                  speed: const Duration(milliseconds: 50)),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: SizedBox(
+                                width: 200.0,
+                                height: 200.0,
+                                child: Neumorphic(
+                                  style: NeumorphicStyle(
+                                    shape: NeumorphicShape.flat,
+                                    boxShape: const NeumorphicBoxShape.circle(),
+                                    depth: 5.0,
+                                    intensity: 0.8,
+                                    surfaceIntensity: 0.8,
+                                    color: Color(
+                                        int.parse(userConfig['secondary'])),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 50.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                          height: 200.0,
+                          width: 300.0,
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'SLIDER',
+                                  textDirection: TextDirection.ltr,
+                                  style: TextStyle(
+                                    fontFamily: "BebasNeue",
+                                    fontSize: 130.0,
+                                    color:
+                                        Color(int.parse(userConfig['primary'])),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  'PUZZLE',
+                                  textDirection: TextDirection.ltr,
+                                  style: TextStyle(
+                                    fontFamily: "BebasNeue",
+                                    fontSize: 50.0,
+                                    color: Color(
+                                        int.parse(userConfig['secondary'])),
+                                  ),
+                                ),
+                              )
                             ],
-                            pause: const Duration(
-                              milliseconds: 0,
-                            )),
-                      ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 30.0,
+                                color: Color(int.parse(userConfig['primary'])),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 30.0,
+                                color: Color(int.parse(userConfig['primary'])),
+                              ),
+                              Builder(builder: (context) {
+                                return NeumorphicButton(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+                                  onPressed: () {
+                                    if (userConfig['background_sound'] ==
+                                        "on") {
+                                      _audioCacheBackground.fixedPlayer!
+                                          .stop()
+                                          .then((value) {
+                                        _audioCacheBackground.loop(
+                                          "${userConfig['background_sound_option']}.ogg",
+                                          volume: double.parse(userConfig[
+                                              'background_sound_volume']),
+                                        );
+                                      });
+                                    }
+                                    if (userConfig['interface_sound'] == 'on') {
+                                      _audioCacheInterface.play(
+                                          'page-back-chime.wav',
+                                          volume: double.parse(userConfig[
+                                              'interface_sound_volume']),
+                                          mode: PlayerMode.MEDIA_PLAYER);
+                                    }
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: const NMenuPage(),
+                                          type: PageTransitionType
+                                              .rightToLeftWithFade),
+                                    );
+                                  },
+                                  style: NeumorphicStyle(
+                                      shape: NeumorphicShape.flat,
+                                      boxShape: NeumorphicBoxShape.roundRect(
+                                          const BorderRadius.all(
+                                              Radius.circular(10.0))),
+                                      depth: 0.0,
+                                      intensity: 0.8,
+                                      surfaceIntensity: 0.8,
+                                      color: Color(int.parse(
+                                          userConfig['primary_background']))),
+                                  child: Text(
+                                    'START',
+                                    textDirection: TextDirection.ltr,
+                                    style: TextStyle(
+                                      color: Color(
+                                          int.parse(userConfig['secondary'])),
+                                      fontFamily: "BebasNeue",
+                                      fontSize: 40.0,
+                                    ),
+                                  ),
+                                );
+                              }),
+                              Icon(
+                                Icons.arrow_back_ios_rounded,
+                                size: 30.0,
+                                color: Color(int.parse(userConfig['primary'])),
+                              ),
+                              Icon(
+                                Icons.arrow_back_ios_rounded,
+                                size: 30.0,
+                                color: Color(int.parse(userConfig['primary'])),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-              snapshot.error.toString(),
-              textDirection: TextDirection.ltr,
-              style: const TextStyle(fontSize: 50.0, color: Colors.red),
-            ));
-          } else {
-            return const SizedBox();
-          }
-        },
-      ),
-    );
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(
+                  backgroundColor: Colors.grey[50],
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SpinKitChasingDots(
+                        color: Colors.indigo[800],
+                        size: 250.0,
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(top: 20.0),
+                        child: DefaultTextStyle(
+                          style: TextStyle(
+                              fontSize: 30.0,
+                              color: Colors.indigo[900],
+                              fontFamily: "BebasNeue"),
+                          child: AnimatedTextKit(
+                              repeatForever: true,
+                              animatedTexts: [
+                                TypewriterAnimatedText(
+                                  'Fetching the code...',
+                                  speed: const Duration(milliseconds: 50),
+                                ),
+                                TypewriterAnimatedText('Fetching the config...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the logic...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the files...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the game...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the world...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the levels...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the theme...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the assets...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the tiles...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the APIs...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching the design...',
+                                    speed: const Duration(milliseconds: 50)),
+                                TypewriterAnimatedText('Fetching...',
+                                    speed: const Duration(milliseconds: 50)),
+                              ],
+                              pause: const Duration(
+                                milliseconds: 0,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                  child: Text(
+                snapshot.error.toString(),
+                textDirection: TextDirection.ltr,
+                style: const TextStyle(fontSize: 50.0, color: Colors.red),
+              ));
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+      );
+    }
   }
 }

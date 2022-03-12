@@ -1,10 +1,4 @@
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
-import 'package:slide_puzzle/config/config_page.dart';
-import 'package:page_transition/page_transition.dart';
-import 'dart:io';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:slide_puzzle/n_menu_page.dart';
+import 'lib.dart';
 
 class NSettings extends StatefulWidget {
   const NSettings({Key? key}) : super(key: key);
@@ -75,9 +69,11 @@ class _NSettingsState extends State<NSettings> {
     userConfig['interface_sound_volume'] = interfaceSoundVolume.toString();
 
     // Write the updated config to file
-    _writePrefs(userConfig).then((value) {
-      if (value) debugPrint('Write updated prefs successful');
-    });
+    if (!kIsWeb) {
+      _writePrefs(userConfig).then((value) {
+        // if (value) debugPrint('Write updated prefs successful');
+      });
+    }
   }
 
   @override
@@ -97,7 +93,10 @@ class _NSettingsState extends State<NSettings> {
             elevation: 10.0,
             leading: NeumorphicButton(
               onPressed: () {
-                if (interfaceSound == "on") {
+                if (userConfig['background_sound'] == "off") {
+                  audioCacheBackground.fixedPlayer!.stop();
+                }
+                if (userConfig['interface_sound'] == "on") {
                   audioCacheInterface.play('page-back-chime.wav',
                       volume: double.parse(interfaceSoundVolume));
                 }
@@ -297,7 +296,7 @@ class _NSettingsState extends State<NSettings> {
                               children: [
                                 AnimatedAlign(
                                   alignment: tapped
-                                      ? Alignment.center
+                                      ? Alignment.centerRight
                                       : Alignment.centerLeft,
                                   curve: curves[curveValue],
                                   duration: const Duration(milliseconds: 500),
@@ -325,24 +324,6 @@ class _NSettingsState extends State<NSettings> {
                                     ),
                                   ),
                                 ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Neumorphic(
-                                    style: NeumorphicStyle(
-                                        shape: NeumorphicShape.flat,
-                                        boxShape: NeumorphicBoxShape.roundRect(
-                                            const BorderRadius.all(
-                                                Radius.circular(20.0))),
-                                        depth: 5.0,
-                                        intensity: 0.8,
-                                        surfaceIntensity: 0.8,
-                                        color: primaryColor),
-                                    child: const SizedBox(
-                                      width: 100.0,
-                                      height: 100.0,
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           )
@@ -379,6 +360,8 @@ class _NSettingsState extends State<NSettings> {
                                 trackDepth: 7.0,
                                 thumbDepth: 7.0,
                                 thumbShape: NeumorphicShape.concave,
+                                activeThumbColor: secondaryBackgroundColor,
+                                inactiveThumbColor: secondaryBackgroundColor,
                                 activeTrackColor: primaryColor,
                                 inactiveTrackColor: secondaryBackgroundColor),
                             onChanged: (bool result) {
@@ -386,10 +369,18 @@ class _NSettingsState extends State<NSettings> {
                                 backgroundSound = result ? "on" : "off";
                               });
                               if (result) {
-                                audioCacheBackground.loop(
-                                    "$backgroundMusicName.ogg",
-                                    volume:
-                                        double.parse(backgroundSoundVolume));
+                                audioCacheBackground.fixedPlayer!
+                                    .stop()
+                                    .then((value) {
+                                  audioCacheBackground.loop(
+                                      "$backgroundMusicName.ogg",
+                                      volume:
+                                          double.parse(backgroundSoundVolume));
+                                });
+                                // audioCacheBackground.loop(
+                                //     "$backgroundMusicName.ogg",
+                                //     volume:
+                                //         double.parse(backgroundSoundVolume));
                               } else {
                                 audioCacheBackground.fixedPlayer!.stop();
                               }
@@ -439,17 +430,16 @@ class _NSettingsState extends State<NSettings> {
                                 height: 2,
                                 color: primaryColor,
                               ),
-                              onChanged: (String? newValue) {
+                              onChanged: (String? musicName) {
                                 setState(() {
-                                  backgroundMusicName = newValue!;
-                                  audioCacheBackground.fixedPlayer!
-                                      .stop()
-                                      .then((value) {
-                                    audioCacheBackground.loop(
-                                        "$backgroundMusicName.ogg",
-                                        volume: double.parse(
-                                            backgroundSoundVolume));
-                                  });
+                                  backgroundMusicName = musicName!;
+                                });
+                                audioCacheBackground.fixedPlayer!
+                                    .stop()
+                                    .then((value) {
+                                  audioCacheBackground.loop("$musicName.ogg",
+                                      volume:
+                                          double.parse(backgroundSoundVolume));
                                 });
                               },
                               items: [
@@ -534,6 +524,8 @@ class _NSettingsState extends State<NSettings> {
                                 trackDepth: 7.0,
                                 thumbDepth: 7.0,
                                 thumbShape: NeumorphicShape.concave,
+                                activeThumbColor: secondaryBackgroundColor,
+                                inactiveThumbColor: secondaryBackgroundColor,
                                 activeTrackColor: primaryColor,
                                 inactiveTrackColor: secondaryBackgroundColor),
                             onChanged: (bool result) {
@@ -580,7 +572,9 @@ class _NSettingsState extends State<NSettings> {
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: kIsWeb
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.spaceAround,
                         children: [
                           NeumorphicButton(
                             onPressed: () {
@@ -643,6 +637,10 @@ class _NSettingsState extends State<NSettings> {
                               ],
                             ),
                           ),
+                          if (kIsWeb)
+                            const SizedBox(
+                              width: 40.0,
+                            ),
                           NeumorphicButton(
                             onPressed: () {
                               _savePrefs();
