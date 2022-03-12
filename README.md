@@ -1,16 +1,17 @@
-# slide_puzzle
+# Slider Puzzle
 
-A new Flutter project.
+A puzzle you will love to slide.
 
-## Getting Started
+## 1. Design Theme
 
-This project is a starting point for a Flutter application.
+  ### Neumorphic Design
 
-A few resources to get you started if this is your first Flutter project:
+## 2. How the game works
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+The game works like this- "On starting the game all the tiles will get shuffled randomly and the player have to reshuffle all the tiles to their original position. Now there are multiple modes and tile options to choose from according to player's preferences."
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 3. Getting Started
+
+Loading the game will get you a loading screen followed by welcome screen. 
+
+<img src="app_images/Warm Mobile Start.png" alt="Warm Mobile Start" width="300" height="300">
