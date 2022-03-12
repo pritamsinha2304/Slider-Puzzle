@@ -34,7 +34,7 @@ All the options are mentioned briefly about what the modes is about.
    **Refer Timer** - Memorize the image shown before the time runs out and solve the puzzle and  
    **Timer** - Solve the whole puzzle within the specified time.
    
-   <img src="app_images/Warm Mobile Basic.png" alt="Warm Mobile Basic" width="300" /> <img src="app_images/Warm Mobile Tiner.png" alt="Warm Mobile Timer" width="300" /> <img src="app_images/Warm Mobile Image.png" alt="Warm Mobile Image" width="300" />
+   <img src="app_images/Warm Mobile Basic.png" alt="Warm Mobile Basic" width="300" /> <img src="app_images/Warm Mobile Timer.png" alt="Warm Mobile Timer" width="300" /> <img src="app_images/Warm Mobile Image.png" alt="Warm Mobile Image" width="300" />
   
   ### c. Tile Background Option:
   
